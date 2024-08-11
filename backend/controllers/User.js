@@ -133,3 +133,14 @@ export const getProfile=async(req,res)=>{
         console.log(err)
     }
 }
+
+export const editProfile=async(req,res)=>{
+    try{
+        const userId=req.id
+
+        let cloudinaryResponse
+    }
+    catch(err){
+
+    }
+}
