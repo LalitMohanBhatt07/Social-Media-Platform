@@ -93,6 +93,43 @@ export const login=async(req,res)=>{
         })
     }
     catch(err){
-        
+        console.log(err)
+        return res.status(500).json({
+            success:false,
+            message:"Cannot Login user",
+            err
+        })
+    }
+}
+
+export const logout=async(req,res)=>{
+    try{
+        return res.cookie("token","",{maxAge:0}).json({
+            success:true,
+            message:"Use logged out successfully"
+        })
+    }
+    catch(err){
+        console.log(err)
+        return res.status(500).json({
+            success:false,
+            message:"Cannot logout user",
+            err
+        })
+    }
+}
+
+export const getProfile=async(req,res)=>{
+    try{
+        const userId=req.params._id
+        let user=await User.findById(userId)
+        return res.status(200).json({
+            success:true,
+            message:"Succefully got Profile",
+            user
+        })
+    }
+    catch(err){
+        console.log(err)
     }
 }
