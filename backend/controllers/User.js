@@ -1,5 +1,8 @@
 const User=require("../models/userModel.js")
 import bcrypt from "bcryptjs"
+import jwt from "jsonwebtoken"
+import dotenv from "dotenv"
+dotenv.config()
 
 export const register=async(req,res)=>{
     try{
@@ -41,7 +44,53 @@ export const register=async(req,res)=>{
 
 export const login=async(req,res)=>{
     try{
+        const {email,password}=req.body
+        if(!email || !password){
+            res.status(401).json({
+                success:false,
+                message:"All fields are mandatory"
+            })
+        }
+        let user=await User.findOne({email})
+        if(!user){
+            res.status(401).json({
+                success:false,
+                message:"Email does not exists"
+            })
+        }
 
+        const isPasswordMatch=await bcrypt.compare(password,user.password)
+
+        if(!isPasswordMatch){
+            return res.status(401).json({
+                success:false,
+                message:"Password does not match"
+            })
+        }
+
+        user={
+            _id:user._id,
+            userName:user.userName,
+            email:user.email,
+            profilePicture:user.profilePicture,
+            bio:user.bio,
+            followers:user.followers,
+            following:user.following,
+            posts:user.posts
+        }
+
+        const token=await jwt.sign(
+            {userId:user._id},
+            process.env.SECRET_KEY,
+        {expiresIn:`1d`})
+
+        return res.cookie(`token`,token,{
+            httpOnly:true,sameSite:'strict',maxAge:1*24*60*60*1000
+        }).json({
+            success:true,
+            message:`Welcome back ${user.userName}`,
+            user
+        })
     }
     catch(err){
         
