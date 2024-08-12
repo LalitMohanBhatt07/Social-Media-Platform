@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
 import getDataUri from "../Utils/datauri.js"
+import cloudinary from "../Utils/cloudinary.js"
 dotenv.config()
 
 export const register=async(req,res)=>{
@@ -140,12 +141,41 @@ export const editProfile=async(req,res)=>{
         const userId=req.id
         const {bio,gender}=req.body
         const profilePicture=req.file
-        let cloudinaryResponse
+        let cloudResponse
 
         if(profilePicture){
             const fileUri=getDataUri(profilePicture)
-            
+           cloudResponse= await cloudinary.uploader.upload(fileUri)
+
         }
+
+        const user=await User.findById(userId)
+        if(!user){
+            return res.status(404).json({
+                success:false,
+                message:"User not found"
+            })
+        }
+
+        if(bio){
+            user.bio=bio
+        }
+
+        if(gender){
+            user.gender=gender
+        }
+
+        if(profilePicture){
+            user.profilePicture=cloudResponse.secure_url
+        }
+
+        await user.save()
+
+        return res.status(200).json({
+            success:true,
+            message:"Profile Updated successfully",
+            user
+        })
         
     }
     catch(err){
