@@ -2,6 +2,7 @@ const User=require("../models/userModel.js")
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
+import getDataUri from "../Utils/datauri.js"
 dotenv.config()
 
 export const register=async(req,res)=>{
@@ -137,8 +138,15 @@ export const getProfile=async(req,res)=>{
 export const editProfile=async(req,res)=>{
     try{
         const userId=req.id
-
+        const {bio,gender}=req.body
+        const profilePicture=req.file
         let cloudinaryResponse
+
+        if(profilePicture){
+            const fileUri=getDataUri(profilePicture)
+            
+        }
+        
     }
     catch(err){
 
