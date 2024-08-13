@@ -212,3 +212,80 @@ export const getSuggestedUser=async(req,res)=>{
         })
     }
 }
+
+export const followUnfollow=async(req,res)=>{
+    try{
+        const followKrneWala=req.id
+        const jiskoFollowKarunga=req.params.id
+
+        if(followKrneWala ===jiskoFollowKarunga){
+            return res.status(400).json({
+                success:false,
+                message:"You cannot follow or unfollow Yourself"
+            })
+        }
+
+        const user=await User.findById({followKrneWala})
+
+        const targetUser=await User.findById({
+            jiskoFollowKarunga
+        })
+
+        if(!user ||!targetUser){
+            return res.status(400).json({
+                success:false,
+                message:"User not found"
+            })
+        }
+
+        //now we will check wheather we want to follow or unfollow
+
+        const isFollowing=user.following.includes(jiskoFollowKarunga)
+
+        if(isFollowing){
+            //unfollow logic
+            User.updateOne({_id:followKrneWala},{
+                $pull:{
+                    following:jiskoFollowKarunga
+                }
+            })
+
+            User.updateOne({
+                _id:jiskoFollowKarunga
+            },{
+                $pull:{
+                    followers:followKrneWala
+                }
+            })
+            return res.status(200).json({
+                success:true,
+                message:"Unfollowed Successfully",
+            })
+        }
+        else{
+            //follow logic 
+            await Promise.all([
+                User.updateOne({_id:followKrneWala},{
+                    $push:{following:jiskoFollowKarunga}
+                }),
+
+                User.updateOne({_id:jiskoFollowKarunga},{$push:
+                    {followers:followKrneWala}
+                })
+            ])
+            return res.status(200).json({
+                success:true,
+                message:"followed Successfully",
+            })
+        }
+
+        
+    }
+    catch(err){
+        console.log(err)
+        return res.status(500).json({
+            success:false,
+            message:"Cannot follow unfollow"
+        })
+    }
+}
