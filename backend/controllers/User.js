@@ -179,6 +179,36 @@ export const editProfile=async(req,res)=>{
         
     }
     catch(err){
+        clg(err)
+        res.status(500).json({
+            success:false,
+            message:"Cannot get Users profile"
+        })
+    }
+}
 
+
+export const getSuggestedUser=async(req,res)=>{
+    try{
+        const suggestedUser=await User.find({_id:{$ne:req.id}}).select("-password")
+
+        if(suggestedUser){
+            return res.status(400).json({
+                success:false,
+                message:"Cannot get suggested user"
+            })
+        }
+        return res.status(200).json({
+            success:"false",
+            message:"Successfully got Suggested User",
+            users:suggestedUser
+        })
+    }
+    catch(err){
+        console.log(err)
+        return res.status(500).json({
+            success:false,
+            message:"Cannot get suggested user"
+        })
     }
 }
