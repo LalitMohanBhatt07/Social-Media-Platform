@@ -5,11 +5,13 @@ import upload from "../middlewares/multer.js"
 import e from "express"
 const router=express.Router()
 
+
+
 router.post('/register',register)
 router.post('/login',login)
 router.get('/logout',logout)
 router.get("/id:profile",isAuthenticated,getProfile)
-router.post("/profile/edit",isAuthenticated,upload,single('profilePicture'),editProfile)
+router.post("/profile/edit",isAuthenticated,upload.single('profilePicture'),editProfile)
 router.get('suggested',isAuthenticated,getSuggestedUser)
 router.post('/followunfloow/:id',isAuthenticated,followUnfollow)
 
