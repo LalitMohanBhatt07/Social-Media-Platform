@@ -123,8 +123,9 @@ export const logout=async(req,res)=>{
 
 export const getProfile=async(req,res)=>{
     try{
-        const userId=req.params._id
-        let user=await User.findById(userId)
+        const userId=req.params.id
+        let user=await User.findById(userId).select('-password')
+        console.log(user)
         return res.status(200).json({
             success:true,
             message:"Succefully got Profile",
@@ -133,6 +134,11 @@ export const getProfile=async(req,res)=>{
     }
     catch(err){
         console.log(err)
+        return res.status(500).json({
+            success:false,
+            message:"cannot getProfile of user",
+            err
+        })
     }
 }
 
@@ -149,7 +155,7 @@ export const editProfile=async(req,res)=>{
 
         }
 
-        const user=await User.findById(userId)
+        const user=await User.findById(userId).select('-password')
         if(!user){
             return res.status(404).json({
                 success:false,
@@ -192,14 +198,14 @@ export const getSuggestedUser=async(req,res)=>{
     try{
         const suggestedUser=await User.find({_id:{$ne:req.id}}).select("-password")
 
-        if(suggestedUser){
+        if(!suggestedUser){
             return res.status(400).json({
                 success:false,
                 message:"Cannot get suggested user"
             })
         }
         return res.status(200).json({
-            success:"false",
+            success:"true",
             message:"Successfully got Suggested User",
             users:suggestedUser
         })
@@ -208,7 +214,8 @@ export const getSuggestedUser=async(req,res)=>{
         console.log(err)
         return res.status(500).json({
             success:false,
-            message:"Cannot get suggested user"
+            message:"Cannot get suggested user",
+            err
         })
     }
 }
@@ -225,11 +232,11 @@ export const followUnfollow=async(req,res)=>{
             })
         }
 
-        const user=await User.findById({followKrneWala})
+        const user=await User.findById(followKrneWala)
 
-        const targetUser=await User.findById({
+        const targetUser=await User.findById(
             jiskoFollowKarunga
-        })
+        )
 
         if(!user ||!targetUser){
             return res.status(400).json({
