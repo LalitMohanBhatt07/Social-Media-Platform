@@ -254,5 +254,48 @@ export const getCommentsOfPost=async(req,res)=>{
     }
 }
 
+export const deletePost=async(req,res)=>{
+    try{
+        const postId=req.params.id
+        const authorId=req.id
+        const post=Post.findById(postId)
+        if(!post){
+            return res.status(404).json({
+                success:false,
+                message:"Post not found"
+            })
+        }
+        // check logged in user in author of the post
+        if(post.author.toString()!==authorId){
+            res.status(403).json({
+                message:false,
+                message:"Unauthorised to delete post"
+            })
+        }
+
+        await Post.findByIdAndDelete(postId)
+
+        //remove the postId from users post
+        let user=await User.findById(authorId)
+        user.posts=user.posts.filter(id=>id.toString()!==postId)
+        await user.save()
+
+        //delete associated comments
+        await Comment.deleteMany({post:postId})
+
+        return res.status(200).json({
+            success:true,
+            message:"Post Deleted"
+        })
+    }
+    catch(err){
+        console.log(err);
+        return res.status(500).json({
+            success:false,
+            message:"Cannot delete Post"
+        })
+    }
+}
+
 
 
