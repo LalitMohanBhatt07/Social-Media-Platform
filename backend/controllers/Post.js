@@ -297,5 +297,53 @@ export const deletePost=async(req,res)=>{
     }
 }
 
+export const bookmarkPost=async(req,res)=>{
+    try{
+        const postId=req.params.id
+        const userId=req.id
+        const post=await Post.findById(postId)
+        if(!post){
+            return res.status(404).json({
+                success:false,
+                message:"Post not found"
+            })
+        }
+
+        const user=User.findById(userId)
+        if(user.bookmarks.includes(post._id)){
+            //already bookmarked
+            //remove from the bookmarks
+            await user.updateOne({$pull:{bookmarks:post._id}})
+            await user.save()
+            return res.status(200).json({
+                success:true,
+                type:'unsaved',
+                message:"Post Unbookmarked Successfully",
+                post
+            })
+        }
+        else{
+            //bookmark
+            await user.updateOne({$addToSet:{bookmarks:post._id}})
+
+            return res.status(200).json({
+                success:true,
+                type:'saved',
+                message:"Post bookmarked Successfully",
+                post
+            })
+        }
+        
+    }
+    catch(err){
+        console.log(err);
+        return res.status(500).json({
+            success:false,
+            message:"Cannot bookmark/unbookmark post",
+            err
+        })
+    }
+}
+
 
 
