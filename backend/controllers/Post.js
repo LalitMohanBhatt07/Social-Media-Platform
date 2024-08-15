@@ -113,3 +113,37 @@ export const getUserPost=async(req,res)=>{
     }
 }
 
+export const likePost=async(req,res)=>{
+    try{
+        const likeKarneWaleUserKiId=req.id
+        const postId=req.params.id
+
+        const post=await Post.findById(postId)
+        if(!post){
+            return res.status(404).json({
+                success:false,
+                message:"Post not found"
+            })
+        }
+
+        // like logic started
+        //hamne post.likes.push() method ka use isliye nahi kara kyonki ek user sirf ek hi baar like kar sakta h
+        await post.updateOne({$addToSet:{likes:likeKarneWaleUserKiId}})
+        await post.save()
+
+        //implementing socket io for real time notification
+        return res.status(200).json({
+            succes:true,
+            message:"Successfully like post",
+            post
+        })
+    }
+    catch(err){
+        console.log(err);
+        return res.status(500).json({
+            success:false,
+            message:"Cannot like post"
+        })
+    }
+}
+
