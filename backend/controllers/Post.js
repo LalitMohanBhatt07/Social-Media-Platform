@@ -80,3 +80,36 @@ export const getAllPost=async(req,res)=>{
         })
     }
 }
+
+export const getUserPost=async(req,res)=>{
+    try{
+        const userId=req.id
+        const posts=await Post.find({author:userId}).sort({createdAt:-1}).populate({
+            path:"author",
+            select:"userName,profilePicture"
+        })
+        .populate({
+            path:"comments",
+            sort:{createdAt:-1},
+            populate:{
+                path:"author",
+                select:"userName,profilePicture"
+            }
+        })
+
+        return res.status(200).json({
+            success:true,
+            message:"Successfully fetched users posts",
+            posts
+        })
+    }
+    catch(err){
+        console.log(err);
+        return res.status(500).json({
+            success:false,
+            message:"Cannot fetch users posts",
+            
+        })
+    }
+}
+
