@@ -44,3 +44,33 @@ export const sendMessage=async(req,res)=>{
         })
     }
 }
+
+export const getMessage=async(req,res)=>{
+    try{
+        const senderId=req.id
+        const receiverId=req.params.id
+
+        const conversation=Conversation.find({
+            participants:{$all:[senderId,receiverId]}
+        })
+
+        if(!conversation){
+            return res.status(200).json({
+                success:true,
+                message:[]
+            })
+        }
+
+        return res.status(200).json({
+            success:true,
+            messages:conversation?.messages
+        })
+    }
+    catch(err){
+        console.log(err);
+        return res.status(500).json({
+            success:false,
+            message:"Cannt get messages"
+        })
+    }
+}
