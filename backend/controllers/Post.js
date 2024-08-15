@@ -3,6 +3,7 @@ import sharp from "sharp"
 import cloudinary from "../Utils/cloudinary.js"
 import User from "../models/userModel.js"
 import Comment from "../models/comment.js"
+import e from "express"
 
 export const addNewPost=async(req,res)=>{
     try{
@@ -222,6 +223,34 @@ export const addComment=async(req,res)=>{
             message:"Failed to create comment",
             
         })
+    }
+}
+
+export const getCommentsOfPost=async(req,res)=>{
+    try{
+        const postId=req.params.id
+
+        const comments=await Comment.find({post:postId}).populate('author','username','profilePicture')
+
+        if(!comments){
+            return res.status(404).json({
+                success:false,
+                message:"No comments found"
+            })
+        }
+
+        return res.status(200).json({
+            success:true,
+            message:"Successfully fetched comments of post",
+            comments
+        })
+    }
+    catch(err){
+        return res.status(500).json({
+            success:false,
+            message:"Failed to fetch comments of post",
+        })
+    
     }
 }
 
