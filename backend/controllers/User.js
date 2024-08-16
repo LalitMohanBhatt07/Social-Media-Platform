@@ -1,10 +1,11 @@
 import User from "../models/userModel.js"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
-import dotenv from "dotenv"
+import dotenv, { populate } from "dotenv"
 import getDataUri from "../Utils/datauri.js"
 import cloudinary from "../Utils/cloudinary.js"
 dotenv.config()
+import {Post} from '../models/post.js'
 
 export const register=async(req,res)=>{
     try{
@@ -69,6 +70,20 @@ export const login=async(req,res)=>{
                 message:"Password does not match"
             })
         }
+        const token=await jwt.sign(
+            {userId:user._id},
+            process.env.SECRET_KEY,
+        {expiresIn:`1d`})
+
+        const populatedPosts=await Promise.all(
+            user.posts.map(async(postId)=>{
+                const post=await Post.findById(postId)
+                if(post.author.equals(user._id)){
+                    return post
+                }
+                return null
+            })
+        )
 
         user={
             _id:user._id,
@@ -76,15 +91,12 @@ export const login=async(req,res)=>{
             email:user.email,
             profilePicture:user.profilePicture,
             bio:user.bio,
-            followers:user.followers,
+            followers:user.follower,
             following:user.following,
-            posts:user.posts
+            posts:populatedPosts
         }
 
-        const token=await jwt.sign(
-            {userId:user._id},
-            process.env.SECRET_KEY,
-        {expiresIn:`1d`})
+        
 
         return res.cookie(`token`,token,{
             httpOnly:true,sameSite:'strict',maxAge:1*24*60*60*1000
