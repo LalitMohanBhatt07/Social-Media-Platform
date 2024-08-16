@@ -8,6 +8,7 @@ import userRote from "./routes/userRote.js"
 import postRoute from "./routes/postRoute.js";
 import messageRoute from "./routes/messageRoute.js";
 
+
 const app = express();
 
 // Middleware
@@ -20,10 +21,11 @@ const corsOptions = {
   origin: 'http://localhost:5173', // Your frontend URL
   credentials: true,
 };
-app.options('*', cors(corsOptions));
+
 
 
 app.use(cors(corsOptions));
+app.options('*', cors())    
 
 app.use("/api/v1/user", userRote);
 app.use("/api/v1/post", postRoute);

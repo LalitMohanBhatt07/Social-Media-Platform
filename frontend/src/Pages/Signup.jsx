@@ -6,6 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -16,6 +17,7 @@ const Signup = () => {
         password:""
     })
     const [loading, setLoading] = useState(false);
+    const navigate=useNavigate()
 
     const changeEventHandler=(e)=>{
         setInput({...input,[e.target.name]:e.target.value})
@@ -35,7 +37,7 @@ const Signup = () => {
             console.log("response",response)
            if(response?.data?.success){
             toast.success(response.data.message)
-            
+            navigate("/login")
            }
         }
         catch(err){
