@@ -7,43 +7,49 @@ import cloudinary from "../Utils/cloudinary.js"
 dotenv.config()
 import {Post} from '../models/post.js'
 
-export const register=async(req,res)=>{
-    try{
-        const {userName,email,password}=req.body
-        if(!userName || !email || !password){
-            return res.status(401).json({
-                success:false,
-                message:"All Fields are mandatory"
-            })
-        }
-        const user=await User.findOne({email})
-        if(user){
-            return res.status(400).json({
-                success:false,
-                message:"User already exist"
-            })
-        }
-
-        const hashedPassoword=await bcrypt.hash(password,10)
-
-        await User.create({
-            userName,
-            email,
-            password:hashedPassoword
-        })
-
-        return res.status(200).json({
-            success:true,
-            message:"Account created Successfully"
-        })
+export const register = async (req, res) => {
+    try {
+      const { userName, email, password } = req.body;
+  
+      // Check if all fields are provided
+      if (!userName || !email || !password) {
+        return res.status(400).json({
+          success: false,
+          message: "All fields are mandatory",
+        });
+      }
+  
+      // Check if user already exists
+      const user = await User.findOne({ email });
+      if (user) {
+        return res.status(400).json({
+          success: false,
+          message: "User already exists",
+        });
+      }
+  
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      // Create a new user
+      await User.create({
+        userName,
+        email,
+        password: hashedPassword,
+      });
+  
+      return res.status(201).json({
+        success: true,
+        message: "Account created successfully",
+      });
+    } catch (err) {
+      console.error(err); // Log the error for debugging
+      return res.status(500).json({
+        success: false,
+        message: "Some error occurred during signup",
+      });
     }
-    catch(err){
-        return res.status(500).json({
-            success:false,
-            message:"Some error occur during signup of register"
-        })
-    }
-}
+  };
 
 export const login=async(req,res)=>{
     try{
