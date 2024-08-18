@@ -7,7 +7,7 @@ import React,{useState} from "react";
 import { IoIosSend } from "react-icons/io";
 import { Button } from "@/components/ui/button";
 import { CiBookmark } from "react-icons/ci";
-import CommentDia from "../CommentDia";
+import CommentDiscription from "../CommentDescription";
 
 
 
@@ -86,9 +86,9 @@ const Posts = () => {
         caption
       </p>
       <span className="cursor-pointer" onClick={()=>setOpen((prevState)=>!prevState)}>View all 10 comments</span>
-      {
-        open && <CommentDia/>
-      }
+      
+        <CommentDiscription open={open} setOpen={setOpen}/>
+      
       
       <div className={`flex items-center justify-between '}`}>
         <input

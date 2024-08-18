@@ -1,8 +1,8 @@
-import {Dialog,DialogContent} from "./ui/dialog.jsx"
+import {Dialog,DialogContent} from "./ui/dialog"
 
-const CommentDia = ({ open, setOpen }) => {
+const CommentDiscription = ({open, setOpen}) => {
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} >
       <DialogContent onInteractOutside={() => setOpen(false)}>
         <img
           className=""
@@ -13,3 +13,5 @@ const CommentDia = ({ open, setOpen }) => {
     </Dialog>
   );
 };
+
+export default CommentDiscription
