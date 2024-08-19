@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setAuthUser } from '@/slices/authSlice';
 
 
 
@@ -15,7 +17,9 @@ const Login = () => {
         email:"",
         password:""
     })
+    const {user}=useSelector((state)=>state.auth)
     const navigate=useNavigate()
+    const dispatch=useDispatch()
     const [loading, setLoading] = useState(false);
 
     const changeEventHandler=(e)=>{
@@ -35,6 +39,7 @@ const Login = () => {
             });
             console.log("response",response)
            if(response?.data?.success){
+            dispatch(setAuthUser(response.data.user))
             toast.success(response.data.message)
             navigate("/")
            }

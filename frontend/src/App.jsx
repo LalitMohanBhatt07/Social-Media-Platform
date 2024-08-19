@@ -3,7 +3,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import './App.css'
 import Signup from './Pages/Signup.jsx'
 import toast, { Toaster } from 'react-hot-toast';
-import Login from './Pages/Login.jsx';
+import Login from './Pages/Login';
 import { RouterProvider } from 'react-router-dom';
 
 import Home from './components/Home.jsx';
@@ -41,7 +41,6 @@ function App() {
   return (
 <>
   <RouterProvider router={browserRouter}/>
-  <Toaster />
 </>
   )
 }

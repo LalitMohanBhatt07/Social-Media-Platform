@@ -3,17 +3,15 @@ import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { MoreHorizontal } from "lucide-react";
 import { FaHeart } from "react-icons/fa";
 import { FiMessageCircle } from "react-icons/fi";
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { IoIosSend } from "react-icons/io";
 import { Button } from "@/components/ui/button";
 import { CiBookmark } from "react-icons/ci";
 import CommentDiscription from "../CommentDescription";
 
-
-
 const Posts = () => {
   const [text, setText] = useState("");
-  const [open,setOpen]=useState(false)
+  const [open, setOpen] = useState(false);
 
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
@@ -25,7 +23,6 @@ const Posts = () => {
   };
   return (
     <div className="my-8 w-full max-w-sm mx-auto flex flex-col justify-center">
-    
       {/* Header Section */}
       <div className={`flex items-center justify-between`}>
         <div className="flex items-center">
@@ -73,9 +70,12 @@ const Posts = () => {
 
       {/* Footer Section */}
       <div className="flex items-center justify-between my-2">
-        <div className="flex items-center gap-3" >
+        <div className="flex items-center gap-3">
           <FaHeart size="24" className="cursor-pointer text-red-600" />
-          <FiMessageCircle className="cursor-pointer hover:text-gray-600 group:" onClick={()=>setOpen((prevState)=>!prevState)} />
+          <FiMessageCircle
+            className="cursor-pointer hover:text-gray-600 group:"
+            onClick={() => setOpen((prevState) => !prevState)}
+          />
           <IoIosSend className="cursor-pointer hover:text-gray-600" />
           <CiBookmark className="cursor-pointer hover:text-gray-600 ml-auto" />
         </div>
@@ -85,11 +85,15 @@ const Posts = () => {
         <span className="font-medium mr-2">username</span>
         caption
       </p>
-      <span className="cursor-pointer" onClick={()=>setOpen((prevState)=>!prevState)}>View all 10 comments</span>
-      
-        <CommentDiscription open={open} setOpen={setOpen}/>
-      
-      
+      <span
+        className="cursor-pointer"
+        onClick={() => setOpen((prevState) => !prevState)}
+      >
+        View all 10 comments
+      </span>
+
+      <CommentDiscription open={open} setOpen={setOpen} />
+
       <div className={`flex items-center justify-between '}`}>
         <input
           className="outline-none text-sm w-full"
@@ -98,13 +102,7 @@ const Posts = () => {
           value={text}
           placeholder="Add a comment .."
         />
-        {text && (
-          <span
-            className="text-[#3BADF8] cursor-pointer"
-          >
-            Post
-          </span>
-        )}
+        {text && <span className="text-[#3BADF8] cursor-pointer">Post</span>}
       </div>
     </div>
   );
