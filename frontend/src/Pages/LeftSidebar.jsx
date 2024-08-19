@@ -12,12 +12,15 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setAuthUser } from "@/slices/authSlice";
 
 
 
 
 const LeftSidebar = () => {
+    const [open,setOpen]=useState(false)
+    const dispatch=useDispatch()
     const {user}=useSelector((state)=>state.auth)
     const sidebarItems = [
         { icon: <Home />, text: "Home" },
@@ -42,6 +45,8 @@ const LeftSidebar = () => {
 
     const [likeNotification,setLikeNotification]=useState(0)
 
+    const createPostHandler
+
     const logoutHandler=async()=>{
         try{
             const res=await axios.get('http://localhost:8000/api/v1/user/logout',{
@@ -50,6 +55,7 @@ const LeftSidebar = () => {
             console.log(res)
 
             if(res?.data?.success){
+                dispatch(setAuthUser(null))
                 navigate('/login')
                 toast.success(res.data.message)
             }
@@ -62,6 +68,9 @@ const LeftSidebar = () => {
     const sidebarHandler=(textType)=>{
         if(textType=='Logout'){
             logoutHandler()
+        }
+        else if(textType=='Create'){
+            createPostHandler()
         }
     }
 
