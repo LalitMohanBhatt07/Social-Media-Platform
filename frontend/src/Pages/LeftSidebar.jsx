@@ -12,27 +12,32 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
-const sidebarItems = [
-  { icon: <Home />, text: "Home" },
-  { icon: <Search />, text: "Search" },
-  { icon: <TrendingUpIcon />, text: "Explore" },
-  { icon: <MessageCircle />, text: "Messages" },
-  { icon: <Heart />, text: "Notifications" },
-  { icon: <PlusSquare />, text: "Create" },
-  {
-    icon: (
-      <Avatar>
-        <AvatarImage src="https://github.com/shadcn.png" />
-        <AvatarFallback>CN</AvatarFallback>
-      </Avatar>
-    ),
-    text: "Profile",
-  },
-  { icon: <LogOut />, text: "Logout" },
-];
+
+
 
 const LeftSidebar = () => {
+    const {user}=useSelector((state)=>state.auth)
+    const sidebarItems = [
+        { icon: <Home />, text: "Home" },
+        { icon: <Search />, text: "Search" },
+        { icon: <TrendingUpIcon />, text: "Explore" },
+        { icon: <MessageCircle />, text: "Messages" },
+        { icon: <Heart />, text: "Notifications" },
+        { icon: <PlusSquare />, text: "Create" },
+        {
+          icon: (
+            <Avatar>
+              <AvatarImage src={user?.profilePicture?user?.profilePicture:"https://github.com/shadcn.png"} />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          ),
+          text: "Profile",
+        },
+        { icon: <LogOut />, text: "Logout" },
+      ];
+    
     const navigate=useNavigate()
 
     const [likeNotification,setLikeNotification]=useState(0)

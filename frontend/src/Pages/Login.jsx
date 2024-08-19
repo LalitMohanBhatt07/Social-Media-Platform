@@ -40,6 +40,7 @@ const Login = () => {
             console.log("response",response)
            if(response?.data?.success){
             dispatch(setAuthUser(response.data.user))
+            
             toast.success(response.data.message)
             navigate("/")
            }
