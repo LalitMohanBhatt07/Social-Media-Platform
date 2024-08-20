@@ -45,7 +45,9 @@ const LeftSidebar = () => {
 
     const [likeNotification,setLikeNotification]=useState(0)
 
-    const createPostHandler
+    const createPostHandler=()=>{
+        setO
+    }
 
     const logoutHandler=async()=>{
         try{
@@ -126,4 +128,4 @@ const LeftSidebar = () => {
   );
 };
 
-export default LeftSidebar;
+export default LeftSidebar
