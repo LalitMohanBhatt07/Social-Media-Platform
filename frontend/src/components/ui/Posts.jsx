@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { CiBookmark } from "react-icons/ci";
 import CommentDiscription from "../CommentDescription";
 
-const Posts = () => {
+const Posts = ({post}) => {
+  console.log("Posts object : ",post)
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -64,7 +65,7 @@ const Posts = () => {
       {/* Image Section */}
       <img
         className="rounded-md my-2 w-80 aspect-square"
-        src="https://images.unsplash.com/photo-1458668383970-8ddd3927deed?w=294&dpr=2&h=294&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXRodW1ibmFpbHx8NDUxfHxlbnwwfHx8fHw%3D"
+        src={post?.image}
         alt="post_image"
       />
 
@@ -83,7 +84,7 @@ const Posts = () => {
       <span className="font-medium block mb-2">1k likes</span>
       <p>
         <span className="font-medium mr-2">username</span>
-        caption
+        {post.caption}
       </p>
       <span
         className="cursor-pointer"
