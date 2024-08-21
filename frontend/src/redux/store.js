@@ -9,8 +9,8 @@
 // })
 
 // export default store
+import authSlice from "../slices/authSlice.js"
 
-import authSlice from "@/slices/authSlice";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import {
   FLUSH,
@@ -22,6 +22,8 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { persistReducer as createPersistReducer } from "redux-persist";
+import postSlice from "../slices/postSlice";
+
 
 const persistConfig = {
   key: "root",
@@ -30,7 +32,8 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-  auth: authSlice,  // Ensure authSlice is a reducer
+  auth: authSlice,
+ post:postSlice
 });
 
 const persistedReducer = createPersistReducer(persistConfig, rootReducer);

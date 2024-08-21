@@ -6,52 +6,43 @@ import { Comment } from "../models/comment.js"
 import e from "express"
 
 export const addNewPost=async(req,res)=>{
-    try{
-        const userId=req.id
-        const {caption}=req.body
-        const image=req.file
+    try {
+        const { caption } = req.body;
+        const image = req.file;
+        const authorId = req.id;
 
-        if(image){
-            return res.status(400).json({
-                success:false,
-                message:"Image Required"
-            })
-        }
+        if (!image) return res.status(400).json({ message: 'Image required' });
 
-        //image upload
-        const optimizedImageBuffer=await sharp(image.buffer).resize({width:800,height:800,fit:"inside"} )
-        .toFormat('jpeg',{quality:80})
-        .toBuffer()
+        // image upload 
+        const optimizedImageBuffer = await sharp(image.buffer)
+            .resize({ width: 800, height: 800, fit: 'inside' })
+            .toFormat('jpeg', { quality: 80 })
+            .toBuffer();
 
-        //buffer to data uri
-        const fileUri=`data:image/jpeg:base64,${optimizedImageBuffer.toString('base64')}`
-
-        const cloudResponse=await cloudinary.uploader.upload(fileUri)
-
-        const post=await Post.create({
+        // buffer to data uri
+        const fileUri = `data:image/jpeg;base64,${optimizedImageBuffer.toString('base64')}`;
+        const cloudResponse = await cloudinary.uploader.upload(fileUri);
+        const post = await Post.create({
             caption,
-            image:cloudResponse.secure_url,
-            author:userId
-        })
-        const user=await User.findById(userId)
-        if(user){
-            user.posts.push(post._id)
-            await user.save()
+            image: cloudResponse.secure_url,
+            author: authorId
+        });
+        const user = await User.findById(authorId);
+        if (user) {
+            user.posts.push(post._id);
+            await user.save();
         }
-        
-        await post.populate({path:'author',select:'-password'})
 
-        return res.status(200).json({
-            success:true,
-            message:"Successfully created post",post
+        await post.populate({ path: 'author', select: '-password' });
+
+        return res.status(201).json({
+            message: 'New post added',
+            post,
+            success: true,
         })
-    }
-    catch(err){
-        return res.status(500).json({
-            success:false,
-            message:"Cannot create course",
-            err
-        })
+
+    } catch (error) {
+        console.log(error);
     }
 
 }

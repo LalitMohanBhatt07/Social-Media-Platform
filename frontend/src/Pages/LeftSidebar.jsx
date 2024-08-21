@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser } from "@/slices/authSlice";
+import CreatePostDialog from "@/components/CreatePostDialog";
 
 
 
@@ -45,9 +46,7 @@ const LeftSidebar = () => {
 
     const [likeNotification,setLikeNotification]=useState(0)
 
-    const createPostHandler=()=>{
-        setO
-    }
+  
 
     const logoutHandler=async()=>{
         try{
@@ -72,9 +71,10 @@ const LeftSidebar = () => {
             logoutHandler()
         }
         else if(textType=='Create'){
-            createPostHandler()
+            setOpen(true)
         }
     }
+    console.log(open)
 
   return (
     <div className='fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[16%] h-screen'>
@@ -122,8 +122,7 @@ const LeftSidebar = () => {
                 </div>
             </div>
 
-            {/* <CreatePost open={open} setOpen={setOpen} /> */}
-
+            <CreatePostDialog open={open} setOpen={setOpen}/>
         </div>
   );
 };

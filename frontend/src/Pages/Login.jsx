@@ -37,6 +37,7 @@ const Login = () => {
                 },
                 withCredentials: true // Ensure this is set if your backend requires credentials
             });
+            console.log(response);
             console.log("response",response)
            if(response?.data?.success){
             dispatch(setAuthUser(response.data.user))
