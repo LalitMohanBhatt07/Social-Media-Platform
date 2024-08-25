@@ -20,7 +20,7 @@ const useGetAllPost = () => {
         }
     }
     fetchAllPost()
- })
+ },[])
 }
 
 

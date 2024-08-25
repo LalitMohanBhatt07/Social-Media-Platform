@@ -49,8 +49,7 @@ export const addNewPost=async(req,res)=>{
 
 export const getAllPost=async(req,res)=>{
     try {
-        const posts = await Post.find().sort({ createdAt: -1 })
-            .populate({ path: 'author', select: 'userName profilePicture' })
+        const posts = await Post.find().sort({ createdAt: -1 }).populate({ path: 'author', select: 'userName profilePicture' })
             .populate({
                 path: 'comments',
                 sort: { createdAt: -1 },
@@ -100,73 +99,73 @@ export const getUserPost=async(req,res)=>{
     }
 }
 
-export const likePost=async(req,res)=>{
-    try{
-        const likeKarneWaleUserKiId=req.id
-        const postId=req.params.id
-
-        const post=await Post.findById(postId)
-        if(!post){
-            return res.status(404).json({
-                success:false,
-                message:"Post not found"
-            })
-        }
-
-        // like logic started
-        //hamne post.likes.push() method ka use isliye nahi kara kyonki ek user sirf ek hi baar like kar sakta h
-        await post.updateOne({$addToSet:{likes:likeKarneWaleUserKiId}})
-        await post.save()
-
-        //implementing socket io for real time notification
-        return res.status(200).json({
-            succes:true,
-            message:"Successfully like post",
-            post
-        })
+export const likePost = async (req, res) => {
+    try {
+      const likeKarneWaleUserKiId = req.id;
+      const postId = req.params.id;
+  
+      const post = await Post.findById(postId);
+      if (!post) {
+        return res.status(404).json({
+          success: false,  // Correct spelling
+          message: "Post not found"
+        });
+      }
+  
+      // Like logic started
+      // Using $addToSet to ensure a user can like a post only once
+      await post.updateOne({ $addToSet: { likes: likeKarneWaleUserKiId } });
+      await post.save();
+  
+      // Return success response
+      return res.status(200).json({
+        success: true,  // Correct spelling
+        message: "Successfully liked post",
+        post
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({
+        success: false,
+        message: "Cannot like post"
+      });
     }
-    catch(err){
-        console.log(err);
-        return res.status(500).json({
-            success:false,
-            message:"Cannot like post"
-        })
+  };
+  
+
+export const dislikePost = async (req, res) => {
+    try {
+      const likeKarneWaleUserKiId = req.id;
+      const postId = req.params.id;
+  
+      const post = await Post.findById(postId);
+      if (!post) {
+        return res.status(404).json({
+          success: false,  // Correct spelling
+          message: "Post not found"
+        });
+      }
+  
+      // Dislike logic started
+      // Using $pull to remove the user's ID from the likes array
+      await post.updateOne({ $pull: { likes: likeKarneWaleUserKiId } });
+      await post.save();
+  
+      // Return success response
+      return res.status(200).json({
+        success: true,  // Correct spelling
+        message: "Successfully disliked post",
+        post
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({
+        success: false,
+        message: "Cannot dislike post"
+      });
     }
-}
-
-export const dislikePost=async(req,res)=>{
-    try{
-        const likeKarneWaleUserKiId=req.id
-        const postId=req.params.id
-
-        const post=await Post.findById(postId)
-        if(!post){
-            return res.status(404).json({
-                success:false,
-                message:"Post not found"
-            })
-        }
-
-        // like logic started
-        //hamne post.likes.push() method ka use isliye nahi kara kyonki ek user sirf ek hi baar like kar sakta h
-        await post.updateOne({$pull:{likes:likeKarneWaleUserKiId}})
-        await post.save()
-
-        //implementing socket io for real time notification
-        return res.status(200).json({
-            succes:true,
-            message:"Successfully disliked post",
-            post
-        })
-    }
-    catch(err){
-        console.log(err);
-        return res.status(500).json({
-            success:false,
-            message:"Cannot dislike post"
-        })
-    }
-}
+  };
+  
 
 export const addComment=async(req,res)=>{
     try{
@@ -240,45 +239,34 @@ export const getCommentsOfPost=async(req,res)=>{
 }
 
 export const deletePost=async(req,res)=>{
-    try{
-        const postId=req.params.id
-        const authorId=req.id
-        const post=Post.findById(postId)
-        if(!post){
-            return res.status(404).json({
-                success:false,
-                message:"Post not found"
-            })
-        }
-        // check logged in user in author of the post
-        if(post.author.toString()!==authorId){
-            res.status(403).json({
-                message:false,
-                message:"Unauthorised to delete post"
-            })
-        }
+    try {
+        const postId = req.params.id;
+        const authorId = req.id;
 
-        await Post.findByIdAndDelete(postId)
+        const post = await Post.findById(postId);
+        if(!post) return res.status(404).json({message:'Post not found', success:false});
 
-        //remove the postId from users post
-        let user=await User.findById(authorId)
-        user.posts=user.posts.filter(id=>id.toString()!==postId)
-        await user.save()
+        // check if the logged-in user is the owner of the post
+        if(post.author.toString() !== authorId) return res.status(403).json({message:'Unauthorized'});
 
-        //delete associated comments
-        await Comment.deleteMany({post:postId})
+        // delete post
+        await Post.findByIdAndDelete(postId);
+
+        // remove the post id from the user's post
+        let user = await User.findById(authorId);
+        user.posts = user.posts.filter(id => id.toString() !== postId);
+        await user.save();
+
+        // delete associated comments
+        await Comment.deleteMany({post:postId});
 
         return res.status(200).json({
             success:true,
-            message:"Post Deleted"
+            message:'Post deleted'
         })
-    }
-    catch(err){
-        console.log(err);
-        return res.status(500).json({
-            success:false,
-            message:"Cannot delete Post"
-        })
+
+    } catch (error) {
+        console.log(error);
     }
 }
 

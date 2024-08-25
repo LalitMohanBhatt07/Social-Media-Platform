@@ -1,13 +1,19 @@
 import React from 'react'
-import Posts from './Posts'
 import { useSelector } from 'react-redux'
+import Posts from './Posts'
 
 const Feed = () => {
-  const {posts}=useSelector((state)=>state.post)
+  const {post}=useSelector((state)=>state.post)
+  console.log(post)
+
+  if (!Array.isArray(post)) {
+    return <p>No posts available</p>;
+  }
+
   return (
-    <div className='flex-1 my-8 flex flex-col items-center pl-[20%]'>
+    <div className='flex-1 my-8 flex flex-col items-center pl-[20%] select-none'>
     {
-    posts.map((post,index)=><Posts key={post._id} post={post}/>)
+      post.map((post)=><Posts key={post._id} Singlepost={post}/>)
     }
       
     </div>

@@ -7,6 +7,8 @@ import { Button } from './ui/button';
 import { readFileAsDataUrl } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPosts } from '@/slices/postSlice';
 
 const CreatePostDialog = ({ open, setOpen }) => {
   const navigate=useNavigate()
@@ -15,6 +17,8 @@ const CreatePostDialog = ({ open, setOpen }) => {
   const [caption, setCaption] = useState("");
   const [imagePreview, setImagePreview] = useState(false);
   const [loading, setLoading] = useState(false);
+  const dispatch=useDispatch()
+  const {post}=useSelector((state)=>state.post)
 
   const fileChangeHandler = async (e) => {
     const file = e.target.files?.[0];
@@ -40,21 +44,28 @@ const CreatePostDialog = ({ open, setOpen }) => {
         withCredentials: true
       });
 
+      console.log("respnse",res)
       if(res.data.success){
+        dispatch(setPosts([res?.data?.post,...post]))
+        console.log("response", res);
         toast.success(res.data.message)
         setOpen(false)
         setFile("")
         setCaption("")
+        
       }
-
-      console.log("response", res);
+      
+      
     } catch (err) {
       toast.error(err.response.data.message);
+     
     }
     finally{
       setLoading(false)
     }
   };
+
+  const {user}=useSelector((state)=>state.auth)
 
   return (
     <Dialog open={open}>
@@ -65,12 +76,12 @@ const CreatePostDialog = ({ open, setOpen }) => {
         </div>
         <div className='flex gap-3 items-center'>
           <Avatar>
-            <AvatarImage src="" />
+            <AvatarImage src={user.profilePicture} />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="">
-            <h1 className="font-semibold text-xs">Username</h1>
-            <span className="text-gray-600 text-xs">Bio Here...</span>
+            <h1 className="font-semibold text-xs">{user?.userName}</h1>
+            <span className="text-gray-600 text-xs">{user.bio}</span>
           </div>
         </div>
         <Textarea value={caption} onChange={(e) => setCaption(e.target.value)} className="focus-visible:ring-transparent border-none" placeholder="Write a caption..." />
