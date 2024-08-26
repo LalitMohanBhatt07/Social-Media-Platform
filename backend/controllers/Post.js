@@ -167,48 +167,59 @@ export const dislikePost = async (req, res) => {
   };
   
 
-export const addComment=async(req,res)=>{
-    try{
-        const postId=req.params.id
-        const commentKarneWaleUserKiId=req.id
-        const {text}=req.body
-
-        const post=await Post.findById(postId)
-        if(!text){
-            return res.status(400).json({
-                success:false,
-                message:"text is required"
-            })
-        }
-
-        const comment=await Comment.create({
-            text,
-            author:commentKarneWaleUserKiId,
-            post:postId
-        }).populate({
-            path:'author',
-            select:"userName,profilePicture"
-        })
-
-        post.comments.push(comment._id)
-
-        await post.save()
-
-        return res.status(200).json({
-            success:true,
-            message:"successfully created comment",
-            comment
-        })
+  export const addComment = async (req, res) => {
+    try {
+      const postId = req.params.id;
+      const commentKarneWaleUserKiId = req.id;
+      const { text } = req.body;
+  
+      if (!text) {
+        return res.status(400).json({
+          success: false,
+          message: "Text is required"
+        });
+      }
+  
+      const post = await Post.findById(postId);
+      if (!post) {
+        return res.status(404).json({
+          success: false,
+          message: "Post not found"
+        });
+      }
+  
+      // Create the comment
+      const comment = await Comment.create({
+        text,
+        author: commentKarneWaleUserKiId,
+        post: postId
+      });
+  
+      // Populate the comment author using a separate query
+      const populatedComment = await Comment.findById(comment._id)
+        .populate({
+          path: 'author',
+          select: 'userName profilePicture'
+        });
+  
+      post.comments.push(comment._id);
+      await post.save();
+  
+      return res.status(200).json({
+        success: true,
+        message: "Successfully created comment",
+        comment: populatedComment
+      });
+    } catch (err) {
+      console.error("Error in addComment:", err.message || err);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to create comment",
+        error: err.message || err
+      });
     }
-    catch(err){
-        console.log(err);
-        return res.status(500).json({
-            success:false,
-            message:"Failed to create comment",
-            
-        })
-    }
-}
+  };
+  
 
 export const getCommentsOfPost=async(req,res)=>{
     try{

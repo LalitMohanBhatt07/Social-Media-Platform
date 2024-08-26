@@ -67,6 +67,8 @@ const CreatePostDialog = ({ open, setOpen }) => {
 
   const {user}=useSelector((state)=>state.auth)
 
+  console.log("user : ",user)
+
   return (
     <Dialog open={open}>
       <DialogContent aria-describedby="dialog-description" onInteractOutside={() => setOpen(false)}>
@@ -76,7 +78,7 @@ const CreatePostDialog = ({ open, setOpen }) => {
         </div>
         <div className='flex gap-3 items-center'>
           <Avatar>
-            <AvatarImage src={user.profilePicture} />
+            <AvatarImage src={user?.profilePicture} />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="">

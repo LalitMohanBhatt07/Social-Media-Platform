@@ -4,22 +4,26 @@ import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const CommentDiscription = ({ open, setOpen }) => {
-  const [text,setText]=useState("")
+  const [text, setText] = useState("");
+  const { selectedPost } = useSelector((store) => store.post);
 
-  const changeEventHandler=(e)=>{
-    const inputText=e.target.value
-    if(inputText.trim()){
-      setText(inputText)
-    }
-    else {setText("")
-    }
-  }
+  console.log("selected post : ", selectedPost);
 
-  const sendMessageHandler=async()=>{
-    alert(text)
-  }
+  const changeEventHandler = (e) => {
+    const inputText = e.target.value;
+    if (inputText.trim()) {
+      setText(inputText);
+    } else {
+      setText("");
+    }
+  };
+
+  const sendMessageHandler = async () => {
+    alert(text);
+  };
   return (
     <Dialog open={open}>
       <DialogContent
@@ -30,7 +34,7 @@ const CommentDiscription = ({ open, setOpen }) => {
           <div className="w-1/2">
             <img
               className="w-full h-full object-cover rounded-lg"
-              src="https://images.unsplash.com/photo-1458668383970-8ddd3927deed?w=294&dpr=2&h=294&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXRodW1ibmFpbHx8NDUxfHxlbnwwfHx8fHw%3D"
+              src={selectedPost?.image}
               alt="Focused Content"
             />
           </div>
@@ -39,12 +43,12 @@ const CommentDiscription = ({ open, setOpen }) => {
               <div className="flex gap-3 items-center">
                 <Link>
                   <Avatar>
-                    <AvatarImage src="" />
+                    <AvatarImage src={selectedPost?.author?.profilePicture} />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </Link>
                 <div className="">
-                  <Link className="font-semibold text-xs">Username</Link>
+                  <Link className="font-semibold text-xs">{selectedPost?.author?.userName}</Link>
                   {/* <span className="text-gray-600 text-sm">Bio here</span> */}
                 </div>
               </div>
@@ -74,7 +78,13 @@ const CommentDiscription = ({ open, setOpen }) => {
                   placeholder="Add a comment ..."
                   className="w-full outline-none border-gray-300 p-4 rounded"
                 />
-                <Button disabled={!text.trim()} onClick={sendMessageHandler} variant="outline">Send</Button>
+                <Button
+                  disabled={!text.trim()}
+                  onClick={sendMessageHandler}
+                  variant="outline"
+                >
+                  Send
+                </Button>
               </div>
             </div>
           </div>

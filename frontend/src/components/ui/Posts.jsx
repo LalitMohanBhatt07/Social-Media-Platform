@@ -11,7 +11,7 @@ import CommentDiscription from "../CommentDescription";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { setPosts } from "@/slices/postSlice";
+import { setPosts, setSelectedPost } from "@/slices/postSlice";
 
 const Posts = ({ Singlepost }) => {
   console.log("Posts object: ", Singlepost);
@@ -74,33 +74,37 @@ const Posts = ({ Singlepost }) => {
     }
   };
   
-  const commentHandler=async()=>{
-    try{
-      const res=await axios.post(`http://localhost:8000/api/v1/post/${post._id}/comment`,{text},{
-        headers:{
-          'Content-Type':'application/json'
-        },
-        withCredentials:true
-      })
+  const commentHandlers = async () => {
 
-      console.log(res)
-      if(res.data.success){
-        const updatedCommentsData=[...comment,res.data.message]
+    // try {
+    //     const res = await axios.post(`http://localhost:4000/api/v1/post/${Singlepost._id}/comment`, { text }, {
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         withCredentials: true
+    //     });
+    //     // console.log(res.data);
+    //     // if (res.data.success) {
+    //     //     const updatedCommentData = [...comment, res.data.comment];
+    //     //     setComment(updatedCommentData);
 
-        setComment(updatedCommentsData)
+    //     //     const updatedPostData = post.map(p =>
+    //     //         p._id === Singlepost._id ? { ...p, comments: updatedCommentData } : p
+    //     //     );
 
-        const updatedPostData=post.map((p)=>
-        p._id===Singlepost._id?{...p,comments:updatedCommentsData}:p
-      )
-      dispatch(setPosts(updatedPostData))
+    //     //     dispatch(setPosts(updatedPostData));
+    //     //     toast.success(res.data.message);
+    //     //     setText("");
+    //     // }
+    // } catch (error) {
+    //     console.log(error);
+    // }
+}
 
-        
-      }
-    }
-    catch(err){
-      console.log(err)
-    }
-  }
+const commentHandlersNew=(event)=>{
+  event.preventDefault()
+  toast.success("Hello")
+}
   
   const deletePostHandler = async () => {
     try {
@@ -162,7 +166,10 @@ const Posts = ({ Singlepost }) => {
       <div className="flex items-center justify-between my-2">
         <div className="flex items-center gap-3">
           <FaHeart onClick={likeOrDislikeHandler} size="24" className={`cursor-pointer ${liked ? "text-red-600" : "text-gray-400"}`} />
-          <FiMessageCircle className="cursor-pointer hover:text-gray-600" onClick={() => setOpen((prevState) => !prevState)} />
+          <FiMessageCircle className="cursor-pointer hover:text-gray-600" onClick={() =>{
+            dispatch(setSelectedPost(Singlepost))
+            setOpen((prevState) => !prevState)
+          } } />
           <IoIosSend className="cursor-pointer hover:text-gray-600" />
           <CiBookmark className="cursor-pointer hover:text-gray-600 ml-auto" />
         </div>
@@ -188,7 +195,12 @@ const Posts = ({ Singlepost }) => {
           value={text}
           placeholder="Add a comment .."
         />
-        {text && <span onClick={commentHandler} className="text-[#3BADF8] cursor-pointer">Post</span>}
+        {text && (
+  <button onClick={commentHandlersNew} className="text-[#3BADF8] cursor-pointer bg-transparent border-none">
+    Post
+  </button>
+)}
+
       </div>
     </div>
   );
