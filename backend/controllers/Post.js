@@ -47,25 +47,32 @@ export const addNewPost=async(req,res)=>{
 
 }
 
-export const getAllPost=async(req,res)=>{
-    try {
-        const posts = await Post.find().sort({ createdAt: -1 }).populate({ path: 'author', select: 'userName profilePicture' })
-            .populate({
-                path: 'comments',
-                sort: { createdAt: -1 },
-                populate: {
-                    path: 'author',
-                    select: 'userName profilePicture'
-                }
-            });
-        return res.status(200).json({
-            posts,
-            success: true
-        })
-    } catch (error) {
-        console.log(error);
-    }
-}
+export const getAllPost = async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .populate({ path: 'author', select: 'userName profilePicture' })
+      .populate({
+        path: 'comments',
+        options: { sort: { createdAt: -1 } },
+        populate: {
+          path: 'author',
+          select: 'userName profilePicture',
+        },
+      });
+
+    return res.status(200).json({
+      posts,
+      success: true,
+    });
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch posts',
+    });
+  }
+};
 
 export const getUserPost=async(req,res)=>{
     try{

@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { setPosts, setSelectedPost } from "@/slices/postSlice";
+import {Badge} from "../ui/badge"
 
 const Posts = ({ Singlepost }) => {
   console.log("Posts object: ", Singlepost);
@@ -22,8 +23,10 @@ const Posts = ({ Singlepost }) => {
   const { post } = useSelector((store) => store.post);
 
   // Improved initialization with optional chaining
-  const [liked, setLiked] = useState(Singlepost.likes?.includes(user?._id) || false);
-  const [comment,setComment]=useState(Singlepost.comment || [])
+  const [liked, setLiked] = useState(
+    Singlepost.likes?.includes(user?._id) || false
+  );
+  const [comment, setComment] = useState(Singlepost.comment || []);
   const [postLike, setPostLike] = useState(Singlepost.likes?.length || 0);
   const dispatch = useDispatch();
 
@@ -40,25 +43,30 @@ const Posts = ({ Singlepost }) => {
 
   const likeOrDislikeHandler = async () => {
     try {
-      const action = liked ? 'dislike' : 'like';
-      const res = await axios.get(`http://localhost:8000/api/v1/post/${Singlepost._id}/${action}`, { withCredentials: true });
-  
+      const action = liked ? "dislike" : "like";
+      const res = await axios.get(
+        `http://localhost:8000/api/v1/post/${Singlepost._id}/${action}`,
+        { withCredentials: true }
+      );
+
       // Log the response for debugging
       console.log("API Response:", res);
-  
+
       // Corrected check for 'success'
       if (res.data && res.data.success) {
         // Update local state based on the response
         const updatedLikes = liked ? postLike - 1 : postLike + 1;
         setPostLike(updatedLikes);
         setLiked(!liked);
-  
+
         // Update global state with the new post data
-        const updatedPostData = post.map(p =>
+        const updatedPostData = post.map((p) =>
           p._id === Singlepost._id
             ? {
                 ...p,
-                likes: liked ? p.likes.filter(id => id !== user._id) : [...p.likes, user._id]
+                likes: liked
+                  ? p.likes.filter((id) => id !== user._id)
+                  : [...p.likes, user._id],
               }
             : p
         );
@@ -73,9 +81,8 @@ const Posts = ({ Singlepost }) => {
       console.error("Error during like/dislike operation:", error);
     }
   };
-  
-  const commentHandlers = async () => {
 
+  const commentHandlers = async () => {
     // try {
     //     const res = await axios.post(`http://localhost:4000/api/v1/post/${Singlepost._id}/comment`, { text }, {
     //         headers: {
@@ -87,11 +94,9 @@ const Posts = ({ Singlepost }) => {
     //     // if (res.data.success) {
     //     //     const updatedCommentData = [...comment, res.data.comment];
     //     //     setComment(updatedCommentData);
-
     //     //     const updatedPostData = post.map(p =>
     //     //         p._id === Singlepost._id ? { ...p, comments: updatedCommentData } : p
     //     //     );
-
     //     //     dispatch(setPosts(updatedPostData));
     //     //     toast.success(res.data.message);
     //     //     setText("");
@@ -99,22 +104,27 @@ const Posts = ({ Singlepost }) => {
     // } catch (error) {
     //     console.log(error);
     // }
-}
+  };
 
-const commentHandlersNew=(event)=>{
-  event.preventDefault()
-  toast.success("Hello")
-}
-  
+  const commentHandlersNew = (event) => {
+    event.preventDefault();
+    toast.success("Hello");
+  };
+
   const deletePostHandler = async () => {
     try {
       setLoading(true);
-      const res = await axios.delete(`http://localhost:8000/api/v1/post/delete/${Singlepost._id}`, { withCredentials: true });
+      const res = await axios.delete(
+        `http://localhost:8000/api/v1/post/delete/${Singlepost._id}`,
+        { withCredentials: true }
+      );
 
       console.log("Delete response: ", res);
 
       if (res.data.success) {
-        const updatedPost = post.filter((postItem) => postItem?._id !== Singlepost?._id);
+        const updatedPost = post.filter(
+          (postItem) => postItem?._id !== Singlepost?._id
+        );
         dispatch(setPosts(updatedPost));
         toast.success(res.data.message);
       }
@@ -132,10 +142,19 @@ const commentHandlersNew=(event)=>{
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Avatar>
-            <AvatarImage src={Singlepost?.author?.profilePicture} alt="post_image" />
+            <AvatarImage
+              src={Singlepost?.author?.profilePicture}
+              alt="post_image"
+            />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
+          <div className="flex gap-3">
           <h1 className="ml-2">{Singlepost.author.userName}</h1>
+          {
+            user._id===Singlepost.author._id && <Badge variant="secondary">Author</Badge>
+          }
+          </div>
+          
         </div>
         <div>
           <Dialog>
@@ -143,15 +162,29 @@ const commentHandlersNew=(event)=>{
               <MoreHorizontal className="cursor-pointer" />
             </DialogTrigger>
             <DialogContent className="flex flex-col items-center text-sm text-center bg-white p-4 rounded shadow-lg">
-              <Button variant="ghost" className="cursor-pointer w-fit text-[#ED4956] font-bold">
+              <Button
+                variant="ghost"
+                className="cursor-pointer w-fit text-[#ED4956] font-bold"
+              >
                 Unfollow
               </Button>
-              <Button variant="ghost" className="mt-2 cursor-pointer w-fit font-bold border-2 border-black">
+              <Button
+                variant="ghost"
+                className="mt-2 cursor-pointer w-fit font-bold border-2 border-black"
+              >
                 Add to favourites
               </Button>
               {user && user?._id === Singlepost?.author?._id && (
-                <Button onClick={deletePostHandler} variant="ghost" className="mt-2 cursor-pointer w-fit font-bold border-2 border-black">
-                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Delete"}
+                <Button
+                  onClick={deletePostHandler}
+                  variant="ghost"
+                  className="mt-2 cursor-pointer w-fit font-bold border-2 border-black"
+                >
+                  {loading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    "Delete"
+                  )}
                 </Button>
               )}
             </DialogContent>
@@ -160,16 +193,29 @@ const commentHandlersNew=(event)=>{
       </div>
 
       {/* Image Section */}
-      <img className="rounded-md my-2 w-80 aspect-square" src={Singlepost?.image} alt="post_image" />
+      <img
+        className="rounded-md my-2 w-80 aspect-square"
+        src={Singlepost?.image}
+        alt="post_image"
+      />
 
       {/* Footer Section */}
       <div className="flex items-center justify-between my-2">
         <div className="flex items-center gap-3">
-          <FaHeart onClick={likeOrDislikeHandler} size="24" className={`cursor-pointer ${liked ? "text-red-600" : "text-gray-400"}`} />
-          <FiMessageCircle className="cursor-pointer hover:text-gray-600" onClick={() =>{
-            dispatch(setSelectedPost(Singlepost))
-            setOpen((prevState) => !prevState)
-          } } />
+          <FaHeart
+            onClick={likeOrDislikeHandler}
+            size="24"
+            className={`cursor-pointer ${
+              liked ? "text-red-600" : "text-gray-400"
+            }`}
+          />
+          <FiMessageCircle
+            className="cursor-pointer hover:text-gray-600"
+            onClick={() => {
+              dispatch(setSelectedPost(Singlepost));
+              setOpen((prevState) => !prevState);
+            }}
+          />
           <IoIosSend className="cursor-pointer hover:text-gray-600" />
           <CiBookmark className="cursor-pointer hover:text-gray-600 ml-auto" />
         </div>
@@ -179,10 +225,14 @@ const commentHandlersNew=(event)=>{
         <span className="font-medium mr-2">{Singlepost.author.userName}</span>
         {Singlepost.caption}
       </p>
-      <span className="cursor-pointer" onClick={() => setOpen((prevState) => !prevState)}>
-        View all {
-          comment.length
-        } comments
+      <span
+        className="cursor-pointer"
+        onClick={() => {
+          dispatch(setSelectedPost(Singlepost));
+          setOpen((prevState) => !prevState);
+        }}
+      >
+        View all {comment.length} comments
       </span>
 
       <CommentDiscription open={open} setOpen={setOpen} />
@@ -196,11 +246,13 @@ const commentHandlersNew=(event)=>{
           placeholder="Add a comment .."
         />
         {text && (
-  <button onClick={commentHandlersNew} className="text-[#3BADF8] cursor-pointer bg-transparent border-none">
-    Post
-  </button>
-)}
-
+          <button
+            onClick={commentHandlersNew}
+            className="text-[#3BADF8] cursor-pointer bg-transparent border-none"
+          >
+            Post
+          </button>
+        )}
       </div>
     </div>
   );

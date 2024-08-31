@@ -5,6 +5,7 @@ import { MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import Comment from "./Comment.jsx";
 
 const CommentDiscription = ({ open, setOpen }) => {
   const [text, setText] = useState("");
@@ -66,8 +67,9 @@ const CommentDiscription = ({ open, setOpen }) => {
             </div>
             <hr />
             <div className="flex-1 overflow-y-auto max-h-96 p-4">
-              Comments Aayenge Comments Aayenge Comments Aayenge Comments
-              Aayenge Comments Aayenge Comments Aayenge value
+              {
+                selectedPost?.comments.map((comment,index)=><Comment key={index} comment={comment}/>)
+              }
             </div>
             <div className="p-4">
               <div className="flex items-center gap-2">

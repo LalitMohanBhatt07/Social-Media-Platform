@@ -15,6 +15,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser } from "@/slices/authSlice";
 import CreatePostDialog from "@/components/CreatePostDialog";
+import { setPosts, setSelectedPost } from "@/slices/postSlice";
 
 
 
@@ -56,7 +57,9 @@ const LeftSidebar = () => {
             console.log(res)
 
             if(res?.data?.success){
+                dispatch(setSelectedPost(null))
                 dispatch(setAuthUser(null))
+                dispatch(setPosts([]))
                 navigate('/login')
                 toast.success(res.data.message)
             }
