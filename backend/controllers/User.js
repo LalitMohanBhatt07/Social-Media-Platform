@@ -19,12 +19,21 @@ export const register = async (req, res) => {
         });
       }
   
-      // Check if user already exists
-      const user = await User.findOne({ email });
-      if (user) {
+      // Check if email already exists
+      const existingUserByEmail = await User.findOne({ email });
+      if (existingUserByEmail) {
         return res.status(400).json({
           success: false,
-          message: "User already exists",
+          message: "User with this email already exists",
+        });
+      }
+  
+      // Check if userName already exists
+      const existingUserByUsername = await User.findOne({ userName });
+      if (existingUserByUsername) {
+        return res.status(400).json({
+          success: false,
+          message: "Username already taken, please choose another",
         });
       }
   
@@ -44,12 +53,24 @@ export const register = async (req, res) => {
       });
     } catch (err) {
       console.error(err); // Log the error for debugging
+  
+      // Handle duplicate key error explicitly
+      if (err.code === 11000) {
+        const duplicatedField = Object.keys(err.keyPattern)[0]; // Get the field name that caused the duplicate key error
+        return res.status(400).json({
+          success: false,
+          message: `${duplicatedField} already exists. Please choose a different one.`,
+        });
+      }
+  
       return res.status(500).json({
         success: false,
         message: "Some error occurred during signup",
       });
     }
   };
+  
+  
 
 export const login=async(req,res)=>{
     try{
